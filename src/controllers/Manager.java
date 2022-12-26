@@ -1,5 +1,8 @@
+package controllers;
 
 import java.util.*;
+
+import model.*;
 
 public class Manager {
 
@@ -48,6 +51,7 @@ public class Manager {
     public void removeSubtaskById(int id) {
         if (subtasks.containsKey(id)) {
             subtasks.remove(id);
+            updateSubtasksMapForEpic(subtasks.get(id));
         } else {
             System.out.println("Подзадачи с таким идентификатором не существует");
         }
@@ -92,6 +96,7 @@ public class Manager {
 
     public void addSubtask(Subtask subtask) {
         subtasks.put(id, subtask);
+        updateSubtasksMapForEpic(subtask);
     }
 
     public void addEpic(Epic epic) {
@@ -105,37 +110,16 @@ public class Manager {
 
     public void updateSubtask(Subtask subtask) {
         subtasks.put(subtask.getId(), subtask);
+        updateSubtasksMapForEpic(subtask);
+    }
+
+    public void updateSubtasksMapForEpic(Subtask subtask){
+        Map<Integer,Subtask> subtasksMap = epics.get(subtask.getEpicId()).getSubtasks();
+        subtasksMap.put(subtask.getId(),subtask);
+        epics.get(subtask.getEpicId()).setSubtasks(subtasksMap);
     }
 
     public void updateEpic(Epic epic) {
-        epics.put(epic.getId(), epic);
-    }
-
-
-    public void setEpicStatus(Epic epic) {
-        List<Subtask> subtasksList = getEpicsSubtasks(epic);
-        int counterNewStatus = 0;
-        int counterDoneStatus = 0;
-
-        if (subtasksList.isEmpty()) {
-            epic.setStatus(Status.NEW);
-        }
-
-        for (Subtask subtask : subtasksList) {
-            if (subtask.getStatus() == Status.NEW) {
-                counterNewStatus++;
-            } else if (subtask.getStatus() == Status.DONE) {
-                counterDoneStatus++;
-            }
-        }
-        if (counterNewStatus == subtasksList.size()) {
-            epic.setStatus(Status.NEW);
-        } else if (counterDoneStatus == subtasksList.size()) {
-            epic.setStatus(Status.DONE);
-        } else {
-            epic.setStatus(Status.IN_PROGRESS);
-        }
-
         epics.put(epic.getId(), epic);
     }
 

@@ -1,3 +1,7 @@
+import controllers.Manager;
+import model.*;
+
+
 public class Main {
 
     public static void main(String[] args) {
@@ -22,39 +26,40 @@ public class Main {
         System.out.println("Список задач после обновления: " + manager.getTasks().toString());
         System.out.println();
 
-        Epic epic = new Epic(manager.generateId(), "Эпик1", "Описание эпика");
-        manager.addEpic(epic);
+        Epic epic1 = new Epic(manager.generateId(), "Эпик1", "Описание эпика");
+        manager.addEpic(epic1);
         Subtask subtask = new Subtask(manager.generateId(), "Подзадача 1", "Описание подзадачи 1",
-                Status.NEW,epic.getId());
+                Status.NEW,epic1.getId());
         manager.addSubtask(subtask);
 
         Subtask subtask2 = new Subtask(manager.generateId(), "Подзадача 2", "Описание подзадачи 2",
                 Status.NEW,
-                epic.getId());
+                epic1.getId());
         manager.addSubtask(subtask2);
-        manager.setEpicStatus(epic);
 
-        Epic epic1 = new Epic(manager.getId(), "Эпик2", "Описание эпика");
-        manager.addEpic(epic1);
+        Epic epic2 = new Epic(manager.getId(), "Эпик2", "Описание эпика");
+        manager.addEpic(epic2);
 
 
         Subtask subtask3 = new Subtask(manager.generateId(), "Подзадача 1", "Описание подзадачи",
-                Status.DONE, epic1.getId());
+                Status.DONE, epic2.getId());
         manager.addSubtask(subtask3);
 
-        manager.setEpicStatus(epic1);
+        //manager.setEpicStatus(epic1);
 
+        System.out.println("ТестСтатуса epic1 " + epic1.getStatus());
+        System.out.println("ТестСтатуса epic2 " + epic1.getStatus());
 
         System.out.println("Список всех эпиков: " + manager.getEpics().toString());
         System.out.println("Список всех подзадач: " + manager.getSubtasks().toString());
-        System.out.println("Подзадачи epic:" + manager.getEpicsSubtasks(epic).toString());
-        System.out.println("Подзадачи epic1:" + manager.getEpicsSubtasks(epic1).toString());
+        System.out.println("Подзадачи epi1:" + manager.getEpicsSubtasks(epic1).toString());
+        System.out.println("Подзадачи epic2:" + manager.getEpicsSubtasks(epic2).toString());
         System.out.println();
 
         manager.removeTaskById(task3.getId());
         System.out.println("Список задач после удаления: " + manager.getTasks().toString());
         System.out.println();
-        manager.removeEpicById(epic.getId());
+        manager.removeEpicById(epic1.getId());
         System.out.println("Список эпиков после удаления: " + manager.getEpics().toString());
         System.out.println();
         System.out.println("Список подзадач после удаления эпика: " + manager.getSubtasks().toString());
@@ -62,3 +67,4 @@ public class Main {
 
     }
 }
+

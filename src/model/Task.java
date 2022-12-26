@@ -1,3 +1,5 @@
+package model;
+
 public class Task {
     protected int id;
     protected String name;
@@ -15,6 +17,9 @@ public class Task {
         this.status = status;
     }
 
+    public Task(){
+
+    }
     public Task(int id, String name, String description) {
         this.id = id;
         this.name = name;
