@@ -81,13 +81,13 @@ public class Manager {
     }
 
     public void clearSubtasksMap() {
-        epics.clear();
         subtasks.clear();
 
     }
 
     public void clearEpicsMap() {
         epics.clear();
+        subtasks.clear();
     }
 
     public void addTask(Task task) {
