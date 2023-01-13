@@ -10,10 +10,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface TaskManager {
-
-   static final int SIZE_OF_HISTORY_LIST = 10;
-   List<Task> historyList = new ArrayList<>();
-    Map<Integer, Task> tasks = new HashMap<>();
+     Map<Integer, Task> tasks = new HashMap<>();
     Map<Integer, Subtask> subtasks = new HashMap<>();
     Map<Integer, Epic> epics = new HashMap<>();
 
@@ -54,9 +51,9 @@ public interface TaskManager {
 
     void updateEpic(Epic epic);
 
-    String getHistory();
-
     Subtask getSubtaskById(int id);
     Task getTaskById(int id);
     Epic getEpicById(int id);
+
+    List<Task> history();
 }

@@ -1,4 +1,6 @@
 import controllers.InMemoryTaskManager;
+import controllers.Managers;
+import controllers.TaskManager;
 import model.*;
 
 import java.util.ArrayList;
@@ -9,7 +11,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        InMemoryTaskManager manager = new InMemoryTaskManager();
+        TaskManager manager =  new InMemoryTaskManager();
         Task task1 = new Task(manager.generateId(), "Задача 1",
                 "Задача 1", Status.NEW);
         manager.addTask(task1);
@@ -23,7 +25,7 @@ public class Main {
         manager.getTaskById(1);
         manager.getEpicById(2);
         manager.getSubtaskById(3);
-        System.out.println("История просмотров:" + "\n" + manager.getHistory());
+        System.out.println("История просмотров:" + "\n" + manager.history());
 
     }
 }

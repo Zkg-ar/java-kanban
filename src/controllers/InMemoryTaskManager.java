@@ -7,6 +7,8 @@ import model.*;
 public class InMemoryTaskManager implements TaskManager {
 
     private int id = 0;
+    protected HistoryManager history = Managers.getDefaultHistory();
+    protected HistoryManager historyManager = Managers.getDefaultHistory();
 
     public int getId() {
         return id;
@@ -118,18 +120,18 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Subtask getSubtaskById(int id){
-        addInHistoryList(subtasks.get(id));
+        history.add(subtasks.get(id));
         return subtasks.get(id);
     }
 
     @Override
     public Task getTaskById(int id){
-        addInHistoryList(tasks.get(id));
+        history.add(tasks.get(id));
         return tasks.get(id);
     }
     @Override
     public Epic getEpicById(int id){
-        addInHistoryList(epics.get(id));
+        history.add(epics.get(id));
         return epics.get(id);
     }
     @Override
@@ -150,28 +152,8 @@ public class InMemoryTaskManager implements TaskManager {
         epics.put(epic.getId(), epic);
     }
 
-// Изначально реализовал метод таким образом
-//    @Override
-//    public List<Task> getHistory() {
-//        return historyList;
-//    }
-
-    // Данная реализация для большей наглядости,приятнее смотерть,в итоговй версии оставлю ту реализацию, которую скажете.
-    public String getHistory() {
-        String history = "";
-        for(int i = 0; i<historyList.size(); i++){
-            history+= "-" + historyList.get(i).getName() + "\n";
-        }
-        return history;
+    @Override
+    public List<Task> history() {
+        return historyManager.getHistory();
     }
-
-    private void addInHistoryList(Task task) {
-        if (historyList.size() < SIZE_OF_HISTORY_LIST) {
-            historyList.add(task);
-        } else {
-            historyList.remove(1);
-            historyList.add(task);
-        }
-    }
-
 }
