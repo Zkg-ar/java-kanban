@@ -10,9 +10,6 @@ import java.util.List;
 import java.util.Map;
 
 public interface TaskManager {
-    Map<Integer, Task> tasks = new HashMap<>();
-    Map<Integer, Subtask> subtasks = new HashMap<>();
-    Map<Integer, Epic> epics = new HashMap<>();
 
 
     int generateId();
@@ -55,5 +52,5 @@ public interface TaskManager {
     Task getTaskById(int id);
     Epic getEpicById(int id);
 
-    List<Task> history();
+    List<Task> getHistory();
 }

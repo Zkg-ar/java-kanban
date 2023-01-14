@@ -6,8 +6,10 @@ import model.*;
 
 public class InMemoryTaskManager implements TaskManager {
 
+    private Map<Integer, Task> tasks = new HashMap<>();
+    private Map<Integer, Subtask> subtasks = new HashMap<>();
+    private Map<Integer, Epic> epics = new HashMap<>();
     private int id = 0;
-    protected HistoryManager history = Managers.getDefaultHistory();
     protected HistoryManager historyManager = Managers.getDefaultHistory();
 
     public int getId() {
@@ -120,18 +122,18 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public Subtask getSubtaskById(int id){
-        history.add(subtasks.get(id));
+        historyManager.add(subtasks.get(id));
         return subtasks.get(id);
     }
 
     @Override
     public Task getTaskById(int id){
-        history.add(tasks.get(id));
+        historyManager.add(tasks.get(id));
         return tasks.get(id);
     }
     @Override
     public Epic getEpicById(int id){
-        history.add(epics.get(id));
+        historyManager.add(epics.get(id));
         return epics.get(id);
     }
     @Override
@@ -153,7 +155,7 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public List<Task> history() {
+    public List<Task> getHistory() {
         return historyManager.getHistory();
     }
 }
