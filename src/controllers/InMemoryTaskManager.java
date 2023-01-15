@@ -43,27 +43,32 @@ public class InMemoryTaskManager implements TaskManager {
         return epics;
     }
 
+
+
     @Override
-    public void removeTaskById(int id) {
+    public boolean removeTaskById(int id) {
         if (tasks.containsKey(id)) {
             tasks.remove(id);
+            return true;
         } else {
-            System.out.println("Задачи с таким идентификатором не существует");
+            return false;
         }
     }
 
     @Override
-    public void removeSubtaskById(int id) {
+    public boolean removeSubtaskById(int id) {
         if (subtasks.containsKey(id)) {
             subtasks.remove(id);
-            updateSubtasksMapForEpic(subtasks.get(id));
+            return true;
         } else {
-            System.out.println("Подзадачи с таким идентификатором не существует");
+            return false;
         }
     }
 
+
+
     @Override
-    public void removeEpicById(int id) {
+    public boolean removeEpicById(int id) {
         if (epics.containsKey(id)) {
             for (Iterator<Map.Entry<Integer, Subtask>> it = subtasks.entrySet().iterator(); it.hasNext(); ) {
                 Map.Entry<Integer, Subtask> entry = it.next();
@@ -72,8 +77,9 @@ public class InMemoryTaskManager implements TaskManager {
                 }
             }
             epics.remove(id);
+            return true;
         } else {
-            System.out.println("Эпика с таким идентификатором не существует");
+           return false;
         }
     }
 

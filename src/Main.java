@@ -22,11 +22,32 @@ public class Main {
                 Status.NEW,epic1.getId());
         manager.addSubtask(subtask);
 
+
+
         manager.getTaskById(1);
         manager.getEpicById(2);
         manager.getSubtaskById(3);
-        System.out.println("История просмотров:" + "\n" + manager.history());
+        manager.getTaskById(1);
+        manager.getEpicById(2);
+        manager.getSubtaskById(3);
+        manager.getTaskById(1);
+        manager.getTaskById(1);
+        manager.getTaskById(1);
+        manager.getTaskById(1);
+        manager.getSubtaskById(3);
+        manager.getSubtaskById(3);
 
+        System.out.println("История просмотров:" + "\n" + manager.getHistory());
+
+        //Пример
+        isRemoved(manager.removeTaskById(5));
+
+    }
+
+    public static void isRemoved(boolean isRemoved){
+        if(!isRemoved){
+            System.out.println("Запрошенная по Id задача/эпик/подзадача не существует");
+        }
     }
 }
 

@@ -22,11 +22,11 @@ public interface TaskManager {
 
     Map<Integer, Epic> getEpics();
 
-    void removeTaskById(int id);
+    boolean removeTaskById(int id);
 
-    void removeSubtaskById(int id);
+    boolean removeSubtaskById(int id);
 
-    void removeEpicById(int id);
+    boolean removeEpicById(int id);
 
     void clearTasksMap();
 
