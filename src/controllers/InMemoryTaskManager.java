@@ -49,6 +49,7 @@ public class InMemoryTaskManager implements TaskManager {
     public boolean removeTaskById(int id) {
         if (tasks.containsKey(id)) {
             tasks.remove(id);
+            historyManager.remove(id);
             return true;
         } else {
             return false;
@@ -59,13 +60,12 @@ public class InMemoryTaskManager implements TaskManager {
     public boolean removeSubtaskById(int id) {
         if (subtasks.containsKey(id)) {
             subtasks.remove(id);
+            historyManager.remove(id);
             return true;
         } else {
             return false;
         }
     }
-
-
 
     @Override
     public boolean removeEpicById(int id) {
@@ -74,9 +74,11 @@ public class InMemoryTaskManager implements TaskManager {
                 Map.Entry<Integer, Subtask> entry = it.next();
                 if (entry.getValue().getEpicId() == id) {
                     it.remove();
+                    historyManager.remove(entry.getValue().getId());
                 }
             }
             epics.remove(id);
+            historyManager.remove(id);
             return true;
         } else {
            return false;
