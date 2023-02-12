@@ -23,8 +23,11 @@ public class Epic extends Task {
 
     @Override
     public String toString() {
-        return name +
-                ", Статус:" + getStatus();
+        return  id +
+                "," + Types.EPIC +
+                "," + name +
+                "," + description +
+                "," + getStatus();
     }
 
     @Override

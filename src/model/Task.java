@@ -36,7 +36,11 @@ public class Task {
 
     @Override
     public String toString() {
-        return  name + ", status=" + status;
+        return id +
+                "," + Types.TASK +
+                "," + name +
+                "," + description +
+                "," + status;
     }
 
     public void setName(String name) {

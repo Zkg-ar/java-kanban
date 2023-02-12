@@ -1,8 +1,10 @@
+import controllers.FileBackedTaskManager;
 import controllers.InMemoryTaskManager;
 import controllers.Managers;
 import controllers.TaskManager;
 import model.*;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,7 +13,7 @@ public class Main {
 
     public static void main(String[] args) {
 
-        TaskManager manager =  new InMemoryTaskManager();
+        TaskManager manager =new  FileBackedTaskManager(new File("ManagerFile.csv"));
         Task task1 = new Task(manager.generateId(), "Задача 1",
                 "Задача 1", Status.NEW);
         manager.addTask(task1);
@@ -35,6 +37,8 @@ public class Main {
         Epic epic2 = new Epic(manager.generateId(), "Эпик2", "Описание эпика");
         manager.addEpic(epic2);
 
+
+
         manager.getTaskById(1);
         manager.getTaskById(2);
         manager.getEpicById(3);
@@ -53,19 +57,14 @@ public class Main {
 
         System.out.println("История просмотров:" + "\n" + manager.getHistory());
 
-        //Удаляем задачу 1
-        isRemoved(manager.removeTaskById(2));
-        // Удаляем эпик 1, содержащий 3 подзадачи
-        isRemoved(manager.removeEpicById(3));
 
-        System.out.println("История просмотров после удаления :" + "\n" + manager.getHistory());
+
+        //System.out.println("История просмотров после удаления :" + "\n" + manager.getHistory());
+
+        //System.out.println(manager.getTaskById(1));
 
     }
 
-    public static void isRemoved(boolean isRemoved){
-        if(!isRemoved){
-            System.out.println("Запрошенная по Id задача/эпик/подзадача не существует");
-        }
-    }
+
 }
 

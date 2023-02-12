@@ -46,29 +46,23 @@ public class InMemoryTaskManager implements TaskManager {
 
 
     @Override
-    public boolean removeTaskById(int id) {
+    public void removeTaskById(int id) {
         if (tasks.containsKey(id)) {
             tasks.remove(id);
             historyManager.remove(id);
-            return true;
-        } else {
-            return false;
         }
     }
 
     @Override
-    public boolean removeSubtaskById(int id) {
+    public void removeSubtaskById(int id) {
         if (subtasks.containsKey(id)) {
             subtasks.remove(id);
             historyManager.remove(id);
-            return true;
-        } else {
-            return false;
         }
     }
 
     @Override
-    public boolean removeEpicById(int id) {
+    public void removeEpicById(int id) {
         if (epics.containsKey(id)) {
             for (Iterator<Map.Entry<Integer, Subtask>> it = subtasks.entrySet().iterator(); it.hasNext(); ) {
                 Map.Entry<Integer, Subtask> entry = it.next();
@@ -79,9 +73,6 @@ public class InMemoryTaskManager implements TaskManager {
             }
             epics.remove(id);
             historyManager.remove(id);
-            return true;
-        } else {
-           return false;
         }
     }
 
@@ -92,19 +83,28 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void clearTasksMap() {
+        for(Integer key : tasks.keySet()){
+            historyManager.remove(tasks.get(key).getId());
+        }
         tasks.clear();
     }
 
     @Override
     public void clearSubtasksMap() {
+        for(Integer key : subtasks.keySet()){
+            historyManager.remove(subtasks.get(key).getId());
+        }
         subtasks.clear();
 
     }
 
     @Override
     public void clearEpicsMap() {
+        for(Integer key : epics.keySet()){
+            historyManager.remove(epics.get(key).getId());
+        }
         epics.clear();
-        subtasks.clear();
+        clearSubtasksMap();
     }
 
     @Override

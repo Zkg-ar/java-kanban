@@ -22,11 +22,11 @@ public interface TaskManager {
 
     Map<Integer, Epic> getEpics();
 
-    boolean removeTaskById(int id);
+    void removeTaskById(int id);
 
-    boolean removeSubtaskById(int id);
+    void removeSubtaskById(int id);
 
-    boolean removeEpicById(int id);
+    void removeEpicById(int id);
 
     void clearTasksMap();
 
@@ -53,4 +53,6 @@ public interface TaskManager {
     Epic getEpicById(int id);
 
     List<Task> getHistory();
+
+    
 }
