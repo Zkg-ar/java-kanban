@@ -87,7 +87,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
             save();
             return task;
         } catch (NullPointerException exp) {
-            throw new NullPointerException("Подзадача с id = " + id + " отсутвует");
+            throw new NullPointerException("Задача с id = " + id + " отсутвует");
         }
     }
 
@@ -137,8 +137,6 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         for (Integer key : getSubtasks().keySet()) {
             all.put(key, getSubtasks().get(key));
         }
-
-
         return all;
     }
 
@@ -182,10 +180,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         for (Integer id : historyById) {
             fileBackedTaskManager.historyManager.add(fileBackedTaskManager.getTasksOfAllTypes().get(id));
         }
-
-
         return fileBackedTaskManager;
-
     }
 
     public static Task fromString(String value) {
