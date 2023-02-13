@@ -5,15 +5,16 @@ import controllers.TaskManager;
 import model.*;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 
 public class Main {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 
-        TaskManager manager =new  FileBackedTaskManager(new File("ManagerFile.csv"));
+        FileBackedTaskManager manager = new  FileBackedTaskManager(new File("src/resources/ManagerFile.csv"));
         Task task1 = new Task(manager.generateId(), "Задача 1",
                 "Задача 1", Status.NEW);
         manager.addTask(task1);
