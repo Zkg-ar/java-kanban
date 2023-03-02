@@ -1,13 +1,31 @@
 package model;
 
+import java.time.Duration;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.Objects;
+import java.util.Optional;
+
 public class Task {
     protected int id;
     protected String name;
     protected String description;
     protected Status status;
 
-    public String getName() {
-        return name;
+    protected LocalDateTime startDate;
+
+    private String LOCAL_DATE_TIME_MAX = LocalDateTime.MAX.format(DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy"));
+
+    protected Duration duration;
+
+    public Task(int id, String name, String description, Status status, LocalDateTime startDate, Duration duration) {
+        this.id = id;
+        this.name = name;
+        this.description = description;
+        this.status = status;
+        this.startDate = startDate;
+        this.duration = duration;
     }
 
     public Task(int id, String name, String description, Status status) {
@@ -15,11 +33,19 @@ public class Task {
         this.name = name;
         this.description = description;
         this.status = status;
+        this.startDate = LocalDateTime.MAX;
+        this.duration = Duration.ofMinutes(0);
     }
 
-    public Task(){
 
+    public Optional<LocalDateTime> getStartTime() {
+        return Optional.ofNullable(startDate);
     }
+
+    public Duration getDuration() {
+        return duration;
+    }
+
     public Task(int id, String name, String description) {
         this.id = id;
         this.name = name;
@@ -40,7 +66,18 @@ public class Task {
                 "," + Types.TASK +
                 "," + name +
                 "," + description +
-                "," + status;
+                "," + status +
+                "," + getStartTime().get().format(DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy"))+
+                "," + getDuration().toMinutes();
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public LocalDateTime getEndTime() {
+
+        return startDate.plus(duration);
     }
 
     public void setName(String name) {
@@ -61,5 +98,18 @@ public class Task {
 
     public void setStatus(Status status) {
         this.status = status;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Task task = (Task) o;
+        return id == task.id && Objects.equals(name, task.name) && Objects.equals(description, task.description);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, name, description);
     }
 }

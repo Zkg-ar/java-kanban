@@ -1,6 +1,8 @@
 package controllers;
 
+import java.time.LocalDateTime;
 import java.util.*;
+import java.util.stream.Collectors;
 
 import model.*;
 
@@ -44,7 +46,6 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
 
-
     @Override
     public void removeTaskById(int id) {
         if (tasks.containsKey(id)) {
@@ -83,7 +84,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void clearTasksMap() {
-        for(Integer key : tasks.keySet()){
+        for (Integer key : tasks.keySet()) {
             historyManager.remove(tasks.get(key).getId());
         }
         tasks.clear();
@@ -91,7 +92,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void clearSubtasksMap() {
-        for(Integer key : subtasks.keySet()){
+        for (Integer key : subtasks.keySet()) {
             historyManager.remove(subtasks.get(key).getId());
         }
         subtasks.clear();
@@ -100,7 +101,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void clearEpicsMap() {
-        for(Integer key : epics.keySet()){
+        for (Integer key : epics.keySet()) {
             historyManager.remove(epics.get(key).getId());
         }
         epics.clear();
@@ -109,13 +110,25 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void addTask(Task task) {
-        tasks.put(id, task);
+        try {
+            tasks.put(id, task);
+            checkingTheIntersection();
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Override
     public void addSubtask(Subtask subtask) {
-        subtasks.put(id, subtask);
-        updateSubtasksMapForEpic(subtask);
+
+        try {
+            subtasks.put(id, subtask);
+            checkingTheIntersection();
+            updateSubtasksMapForEpic(subtask);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
+
     }
 
     @Override
@@ -129,21 +142,23 @@ public class InMemoryTaskManager implements TaskManager {
     }
 
     @Override
-    public Subtask getSubtaskById(int id){
+    public Subtask getSubtaskById(int id) {
         historyManager.add(subtasks.get(id));
         return subtasks.get(id);
     }
 
     @Override
-    public Task getTaskById(int id){
+    public Task getTaskById(int id) {
         historyManager.add(tasks.get(id));
         return tasks.get(id);
     }
+
     @Override
-    public Epic getEpicById(int id){
+    public Epic getEpicById(int id) {
         historyManager.add(epics.get(id));
         return epics.get(id);
     }
+
     @Override
     public void updateSubtask(Subtask subtask) {
         subtasks.put(subtask.getId(), subtask);
@@ -154,8 +169,8 @@ public class InMemoryTaskManager implements TaskManager {
     public void updateSubtasksMapForEpic(Subtask subtask) {
         Map<Integer, Subtask> subtasksMap = epics.get(subtask.getEpicId()).getSubtasks();
         subtasksMap.put(subtask.getId(), subtask);
-        epics.get(subtask.getEpicId()).setSubtasks(subtasksMap);
     }
+
 
     @Override
     public void updateEpic(Epic epic) {
@@ -165,5 +180,33 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Task> getHistory() {
         return historyManager.getHistory();
+    }
+
+    @Override
+    public List<Task> getPrioritizedTasks() {
+
+        Map<Integer, Task> map = new HashMap<>();
+        map.putAll(getTasks());
+        map.putAll(getSubtasks());
+
+
+        List<Task> sortedByDateList = map.values()
+                .stream()
+                .sorted(Comparator.comparing(task -> task.getStartTime().orElse(null), Comparator.nullsLast(LocalDateTime::compareTo)))
+                .collect(Collectors.toList());
+
+        return sortedByDateList;
+    }
+
+
+
+    private void checkingTheIntersection() throws Exception {
+        List<Task> list = getPrioritizedTasks();
+        for (int i = 1; i < list.size(); i++) {
+            if (list.get(i).getStartTime().orElse(LocalDateTime.MAX).isBefore(list.get(i - 1).getEndTime())) {
+                throw new Exception(list.get(i - 1).getName() + " " + list.get(i - 1).getEndTime() + " по времени выполнения пересекается с  "
+                        + list.get(i).getName() + " " + list.get(i).getEndTime());
+            }
+        }
     }
 }

@@ -1,33 +1,90 @@
 package model;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class Epic extends Task {
-    private Map<Integer,Subtask> subtasks;
+    private Map<Integer, Subtask> subtasks;
+    private LocalDateTime startTime;
+    private Duration duration;
 
-    public Epic(int id, String name, String description, Status status) {
+    private LocalDateTime endTime;
 
-        super(id, name, description, status);
-        subtasks = new HashMap<>();
-    }
 
     public Epic(int id, String name, String description) {
         super(id, name, description);
-        subtasks = new HashMap<>();
+        subtasks = new TreeMap<>();
+        duration = Duration.ofMinutes(0);
+        startTime = LocalDateTime.MAX;
     }
 
-    @Override
-    public void setStatus(Status status){
+    public Epic(int id,String name, String description,Status status){
+        super(id,name,description,status);
+        subtasks = new TreeMap<>();
+        duration = Duration.ofMinutes(0);
+        startTime = LocalDateTime.MAX;
+
+    }
+    public Epic(int id, String name, String description, LocalDateTime startTime, Duration duration) {
+        super(id, name, description);
+        this.startTime = startTime;
+        this.duration = duration;
+        subtasks = new TreeMap<>();
+    }
+
+    public Epic(int id, String name, String description, Status status, LocalDateTime startTime, Duration duration) {
+        super(id, name, description, status, startTime, duration);
+        subtasks = new TreeMap<>();
     }
 
     @Override
     public String toString() {
-        return  id +
+        return id +
                 "," + Types.EPIC +
                 "," + name +
                 "," + description +
-                "," + getStatus();
+                "," + getStatus() +
+                "," + getStartTime().get().format(DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy")) +
+                "," + setDuration().toMinutes();
+
+    }
+
+    public Optional<LocalDateTime> getStartTime() {
+
+        if (subtasks.isEmpty()) {
+            return Optional.ofNullable(startTime);
+        }
+        List<Subtask> subtaskList = subtasks.values()
+                .stream()
+                .sorted(Comparator.comparing(task->task.getStartTime().orElse(null),Comparator.nullsLast(LocalDateTime::compareTo)))
+                .collect(Collectors.toList());
+
+        startTime = subtaskList.get(0).getStartTime().get();
+
+        return Optional.of(startTime);
+    }
+
+    public LocalDateTime getEndTime() {
+        List<Subtask> subtaskList = subtasks.values()
+                .stream()
+                .sorted(Comparator.comparing(Subtask::getEndTime).reversed())
+                .collect(Collectors.toList());
+        endTime = subtaskList.get(0).getEndTime();
+        return endTime;
+    }
+
+    public Duration setDuration() {
+        if (!subtasks.isEmpty()) {
+            duration = Duration.ofMinutes(0);
+
+            for (Integer key : subtasks.keySet()) {
+                duration = duration.plus(subtasks.get(key).getDuration());
+            }
+        }
+        return duration;
     }
 
     @Override
@@ -54,13 +111,30 @@ public class Epic extends Task {
         } else {
             return Status.IN_PROGRESS;
         }
+
     }
 
     public Map<Integer, Subtask> getSubtasks() {
+
         return subtasks;
     }
 
-    public void setSubtasks(Map<Integer,Subtask> subtasks) {
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+        Epic epic = (Epic) o;
+        return Objects.equals(subtasks, epic.subtasks);
+    }
+
+
+    public void setSubtasks(Map<Integer, Subtask> subtasks) {
         this.subtasks = subtasks;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(super.hashCode(), subtasks);
     }
 }
