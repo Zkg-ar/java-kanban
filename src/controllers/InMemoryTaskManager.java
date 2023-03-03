@@ -11,6 +11,8 @@ public class InMemoryTaskManager implements TaskManager {
     private Map<Integer, Task> tasks = new HashMap<>();
     private Map<Integer, Subtask> subtasks = new HashMap<>();
     private Map<Integer, Epic> epics = new HashMap<>();
+
+    private Map<Integer,Task> prioritizedTasks = new TreeMap<>();
     private int id = 0;
     protected HistoryManager historyManager = Managers.getDefaultHistory();
 
@@ -112,6 +114,7 @@ public class InMemoryTaskManager implements TaskManager {
     public void addTask(Task task) {
         try {
             tasks.put(id, task);
+            prioritizedTasks.put(task.getId(),task);
             checkingTheIntersection();
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -120,9 +123,9 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void addSubtask(Subtask subtask) {
-
         try {
             subtasks.put(id, subtask);
+            prioritizedTasks.put(subtask.getId(),subtask);
             checkingTheIntersection();
             updateSubtasksMapForEpic(subtask);
         } catch (Exception e) {
@@ -162,6 +165,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void updateSubtask(Subtask subtask) {
         subtasks.put(subtask.getId(), subtask);
+        prioritizedTasks.put(subtask.getId(), subtask);
         updateSubtasksMapForEpic(subtask);
     }
 
@@ -185,12 +189,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public List<Task> getPrioritizedTasks() {
 
-        Map<Integer, Task> map = new HashMap<>();
-        map.putAll(getTasks());
-        map.putAll(getSubtasks());
-
-
-        List<Task> sortedByDateList = map.values()
+        List<Task> sortedByDateList = prioritizedTasks.values()
                 .stream()
                 .sorted(Comparator.comparing(task -> task.getStartTime().orElse(null), Comparator.nullsLast(LocalDateTime::compareTo)))
                 .collect(Collectors.toList());
@@ -201,7 +200,7 @@ public class InMemoryTaskManager implements TaskManager {
 
 
     private void checkingTheIntersection() throws Exception {
-        List<Task> list = getPrioritizedTasks();
+        List<Task>list = getPrioritizedTasks();
         for (int i = 1; i < list.size(); i++) {
             if (list.get(i).getStartTime().orElse(LocalDateTime.MAX).isBefore(list.get(i - 1).getEndTime())) {
                 throw new Exception(list.get(i - 1).getName() + " " + list.get(i - 1).getEndTime() + " по времени выполнения пересекается с  "

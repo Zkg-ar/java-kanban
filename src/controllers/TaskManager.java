@@ -4,10 +4,7 @@ import model.Epic;
 import model.Subtask;
 import model.Task;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public interface TaskManager {
 
@@ -54,7 +51,7 @@ public interface TaskManager {
 
     List<Task> getHistory();
 
-    List<Task>getPrioritizedTasks();
+    List<Task> getPrioritizedTasks();
 
 
 }

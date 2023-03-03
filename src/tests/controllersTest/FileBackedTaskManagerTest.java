@@ -1,4 +1,4 @@
-package tests;
+package tests.controllersTest;
 
 import controllers.FileBackedTaskManager;
 import model.Epic;
@@ -24,9 +24,14 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
 
     private FileBackedTaskManager fileBackedTaskManager;
     @BeforeEach
-    public void beforeEach() throws IOException {
-        manager = new FileBackedTaskManager(new File("src/resources/ManagerFile.csv"));
-        fileBackedTaskManager = new FileBackedTaskManager(new File("src/resources/ManagerFile.csv"));
+    public void beforeEach() {
+
+        try {
+            manager = new FileBackedTaskManager(new File("src/resources/ManagerFile.csv"));
+            fileBackedTaskManager = new FileBackedTaskManager(new File("src/resources/ManagerFile.csv"));
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
     @Test

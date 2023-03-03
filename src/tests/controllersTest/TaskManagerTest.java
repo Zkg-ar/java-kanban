@@ -1,10 +1,12 @@
-package tests;
+package tests.controllersTest;
 
+import controllers.InMemoryTaskManager;
 import controllers.TaskManager;
 import model.Epic;
 import model.Status;
 import model.Subtask;
 import model.Task;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
@@ -20,7 +22,6 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     protected static TaskManager manager;
 
-
     @Test
     public void shouldAddNewTask() {
         Task task = new Task(manager.generateId(),
@@ -29,6 +30,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
                 Status.NEW,
                 LocalDateTime.of(2022, Month.APRIL, 1, 12, 0),
                 Duration.ofMinutes(15));
+
         manager.addTask(task);
 
         Map<Integer, Task> tasks = manager.getTasks();
@@ -81,6 +83,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
                 Status.NEW,
                 LocalDateTime.of(2022, Month.APRIL, 1, 12, 0),
                 Duration.ofMinutes(15));
+
         manager.addTask(task);
 
         Task task2 = new Task(manager.generateId(), "Задача 2",

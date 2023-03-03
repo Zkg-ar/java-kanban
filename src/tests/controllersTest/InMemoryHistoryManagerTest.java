@@ -1,4 +1,4 @@
-package tests;
+package tests.controllersTest;
 
 import controllers.HistoryManager;
 import controllers.InMemoryHistoryManager;
@@ -23,9 +23,6 @@ class InMemoryHistoryManagerTest {
         manager = new InMemoryHistoryManager();
     }
 
-    @Test
-    void getHistory() {
-    }
 
     @Test
     void addTaskInHistoryTest() {
