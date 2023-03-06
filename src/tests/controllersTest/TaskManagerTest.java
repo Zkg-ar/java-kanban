@@ -22,6 +22,7 @@ abstract class TaskManagerTest<T extends TaskManager> {
 
     protected static TaskManager manager;
 
+
     @Test
     public void shouldAddNewTask() {
         Task task = new Task(manager.generateId(),
