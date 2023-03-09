@@ -95,7 +95,6 @@ public class FileBackedTaskManagerTest extends TaskManagerTest<FileBackedTaskMan
         fileBackedTaskManager.addSubtask(subtask);
 
         fileBackedTaskManager.loadFromFile(new File("src/resources/ManagerFile.csv"));
-
         assertEquals(Collections.EMPTY_LIST, fileBackedTaskManager.getHistory());
     }
 }

@@ -49,7 +49,6 @@ public class Epic extends Task {
                 "," + getStatus() +
                 "," + getStartTime().get().format(DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy")) +
                 "," + setDuration().toMinutes();
-
     }
 
     public Optional<LocalDateTime> getStartTime() {
@@ -79,7 +78,6 @@ public class Epic extends Task {
     public Duration setDuration() {
         if (!subtasks.isEmpty()) {
             duration = Duration.ofMinutes(0);
-
             for (Integer key : subtasks.keySet()) {
                 duration = duration.plus(subtasks.get(key).getDuration());
             }

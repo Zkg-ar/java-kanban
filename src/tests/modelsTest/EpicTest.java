@@ -21,7 +21,7 @@ public class EpicTest {
     private static Map<Integer, Subtask> subtasks;
 
     @BeforeEach
-    static void BeforeEach() {
+     void BeforeEach() {
         subtasks = new HashMap<>();
         epic1 = new Epic(1, "epic1", "description");
     }
