@@ -8,15 +8,15 @@ import model.*;
 
 public class InMemoryTaskManager implements TaskManager {
 
-    private Map<Integer, Task> tasks = new HashMap<>();
-    private Map<Integer, Subtask> subtasks = new HashMap<>();
-    private Map<Integer, Epic> epics = new HashMap<>();
+    protected Map<Integer, Task> tasks = new HashMap<>();
+    protected Map<Integer, Subtask> subtasks = new HashMap<>();
+    protected Map<Integer, Epic> epics = new HashMap<>();
 
-    private Set<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(task -> task.getStartTime().
+    protected Set<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(task -> task.getStartTime().
                     orElse(null), Comparator.nullsLast(LocalDateTime::compareTo)));
 
 
-    private int id = 0;
+    protected int id = 0;
     protected HistoryManager historyManager = Managers.getDefaultHistory();
 
     public int getId() {
@@ -189,7 +189,7 @@ public class InMemoryTaskManager implements TaskManager {
         return historyManager.getHistory();
     }
 
-
+    @Override
     public Set<Task> getPrioritizedTasks() {
         return prioritizedTasks;
     }

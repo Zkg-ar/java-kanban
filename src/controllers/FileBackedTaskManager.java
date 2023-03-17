@@ -12,9 +12,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 public class FileBackedTaskManager extends InMemoryTaskManager {
-    Map<Integer, Task> tasksMap = new HashMap<>();
-    Map<Integer, Task> epicsMap = new HashMap<>();
-    Map<Integer, Task> subtasksMap = new HashMap<>();
+
 
 
     private File file;
@@ -28,11 +26,16 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
     }
 
+    public FileBackedTaskManager() {
+    }
+
     @Override
     public void clearTasksMap() {
         super.clearTasksMap();
         save();
     }
+
+
 
     @Override
     public void clearSubtasksMap() {
@@ -139,7 +142,7 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
         return all;
     }
 
-    private void save() {
+    public void save() {
         try (Writer fileWriter = new FileWriter(file)) {
             Map<Integer, Task> map = getTasksOfAllTypes();
             fileWriter.write(TITLE);
@@ -168,11 +171,11 @@ public class FileBackedTaskManager extends InMemoryTaskManager {
 
             Task task = fromString(values[i]);
             if (task instanceof Subtask) {
-                fileBackedTaskManager.subtasksMap.put(task.getId(), task);
+                fileBackedTaskManager.getSubtasks().put(task.getId(),(Subtask) task);
             } else if (task instanceof Epic) {
-                fileBackedTaskManager.epicsMap.put(task.getId(), task);
+                fileBackedTaskManager.getEpics().put(task.getId(),(Epic) task);
             } else if (task instanceof Task) {
-                fileBackedTaskManager.tasksMap.put(task.getId(), task);
+                fileBackedTaskManager.getTasks().put(task.getId(), task);
             }
         }
         if(values[values.length-1].isEmpty()) {

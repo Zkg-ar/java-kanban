@@ -8,8 +8,7 @@ import java.util.stream.Collectors;
 
 public class Epic extends Task {
     private Map<Integer, Subtask> subtasks;
-    private LocalDateTime startTime;
-    private Duration duration;
+
 
     private LocalDateTime endTime;
 
@@ -26,7 +25,6 @@ public class Epic extends Task {
         subtasks = new TreeMap<>();
         duration = Duration.ofMinutes(0);
         startTime = LocalDateTime.MAX;
-
     }
     public Epic(int id, String name, String description, LocalDateTime startTime, Duration duration) {
         super(id, name, description);

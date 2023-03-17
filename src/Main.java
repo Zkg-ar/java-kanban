@@ -1,7 +1,7 @@
 import controllers.FileBackedTaskManager;
 
-import controllers.InMemoryTaskManager;
-import controllers.TaskManager;
+import http.servers.HttpTaskServer;
+import http.servers.KVServer;
 import model.*;
 
 import java.io.File;
@@ -17,6 +17,7 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
         //TaskManager manager = new InMemoryTaskManager();
+        //new KVServer().start();
         FileBackedTaskManager manager = new FileBackedTaskManager(new File("src/resources/ManagerFile.csv"));
 
         Task task1 = new Task(manager.generateId(), "Задача 1",
@@ -27,7 +28,7 @@ public class Main {
 
         Task task2 = new Task(manager.generateId(), "Задача 2",
                 "Задача 2", Status.NEW,
-                LocalDateTime.of(2022, Month.APRIL, 30, 13, 0), Duration.ofMinutes(9));
+                LocalDateTime.of(2022, Month.APRIL, 1, 12, 0), Duration.ofMinutes(9));
 
         manager.addTask(task2);
 
@@ -73,15 +74,8 @@ public class Main {
 
         manager.loadFromFile(new File("src/resources/ManagerFile.csv"));
 
-        System.out.println("История просмотров:" + "\n" + manager.getHistory());
 
-
-        System.out.println("Отсортированный по времени спсок всех задач\n" + manager.getPrioritizedTasks());
-
-
-
-        //System.out.println("Отсортированный по времени спсок всех задач\n" + manager.getPrioritizedTasks());
-
+        HttpTaskServer server = new HttpTaskServer(manager);
     }
 
 

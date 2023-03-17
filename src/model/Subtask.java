@@ -19,7 +19,7 @@ public class Subtask extends Task {
     }
 
     public Optional<LocalDateTime> getStartTime() {
-        return Optional.ofNullable(startDate);
+        return Optional.ofNullable(startTime);
     }
     @Override
     public String toString() {

@@ -1,5 +1,7 @@
 package model;
 
+import com.google.gson.annotations.SerializedName;
+
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -13,18 +15,16 @@ public class Task {
     protected String description;
     protected Status status;
 
-    protected LocalDateTime startDate;
-
-    private String LOCAL_DATE_TIME_MAX = LocalDateTime.MAX.format(DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy"));
+    protected LocalDateTime startTime;
 
     protected Duration duration;
 
-    public Task(int id, String name, String description, Status status, LocalDateTime startDate, Duration duration) {
+    public Task(int id, String name, String description, Status status, LocalDateTime startTime, Duration duration) {
         this.id = id;
         this.name = name;
         this.description = description;
         this.status = status;
-        this.startDate = startDate;
+        this.startTime = startTime;
         this.duration = duration;
     }
 
@@ -33,13 +33,13 @@ public class Task {
         this.name = name;
         this.description = description;
         this.status = status;
-        this.startDate = LocalDateTime.MAX;
+        this.startTime = LocalDateTime.MAX;
         this.duration = Duration.ofMinutes(0);
     }
 
 
     public Optional<LocalDateTime> getStartTime() {
-        return Optional.ofNullable(startDate);
+        return Optional.ofNullable(startTime);
     }
 
     public Duration getDuration() {
@@ -51,6 +51,7 @@ public class Task {
         this.name = name;
         this.description = description;
     }
+
 
     public int getId() {
         return id;
@@ -77,7 +78,7 @@ public class Task {
 
     public LocalDateTime getEndTime() {
 
-        return startDate.plus(duration);
+        return startTime.plus(duration);
     }
 
     public void setName(String name) {
