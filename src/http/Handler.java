@@ -7,33 +7,20 @@ import controllers.TaskManager;
 import http.adapters.DurationAdapter;
 import http.adapters.LocalDateTimeAdapter;
 import model.Epic;
-import model.Status;
 import model.Subtask;
 import model.Task;
-
-
 import java.io.IOException;
-import java.io.ObjectInputFilter;
 import java.io.OutputStream;
-import java.net.URI;
-import java.net.http.HttpClient;
-import java.net.http.HttpRequest;
-import java.net.http.HttpResponse;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-
 import java.time.Duration;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.LocalTime;
-import java.time.format.DateTimeFormatter;
-import java.util.NoSuchElementException;
+
 
 public class Handler implements HttpHandler {
 
     private TaskManager manager;
-    private final DateTimeFormatter format = DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy");
-    //private HttpClient client;
+
 
     public Handler(TaskManager manager) {
         this.manager = manager;
@@ -41,9 +28,6 @@ public class Handler implements HttpHandler {
 
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
     private static Gson gson = new GsonBuilder()
-            //.serializeNulls()
-            //.registerTypeAdapter(LocalDate.class, new LocalDateAdapter())
-            //.registerTypeAdapter(LocalTime.class, new LocalTimeAdapter())
             .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
             .registerTypeAdapter(Duration.class, new DurationAdapter())
             .create();
@@ -54,7 +38,6 @@ public class Handler implements HttpHandler {
 
         Methods methods = Methods.valueOf(httpExchange.getRequestMethod());
         try {
-
             switch (methods) {
                 case GET:
                     handleGetRequest(httpExchange);
@@ -66,10 +49,10 @@ public class Handler implements HttpHandler {
                     handleDeleteRequest(httpExchange);
                     break;
                 default:
-                    System.out.println("Данный метод пока не обрабатывается!");
+                    httpExchange.sendResponseHeaders(405, 0);
             }
-        } catch (JsonParseException | IOException exp) {
-            System.out.println(exp.getMessage());
+        } catch (RuntimeException | IOException exp) {
+            throw  new JsonIOException(exp.getMessage());
         }
     }
 
@@ -91,70 +74,69 @@ public class Handler implements HttpHandler {
                 writeResponse(exchange, gson.toJson(manager.getPrioritizedTasks()), 200);
             }
         } catch (IOException exp) {
-            System.out.println(exp.getMessage());
+            throw  new JsonIOException(exp.getMessage());
         }
     }
 
-    private void handleGetTaskRequest(HttpExchange exchange) throws IllegalArgumentException, IOException {
-
-        if (exchange.getRequestURI().getQuery() == null) {
-            try {
+    private void handleGetTaskRequest(HttpExchange exchange) {
+        try {
+            if (exchange.getRequestURI().getQuery() == null) {
                 writeResponse(exchange, gson.toJson(manager.getTasks()), 200);
-            } catch (IllegalArgumentException | IOException exp) {
-                System.out.println(exp.getMessage());
-            }
-        } else {
-            String[] query = exchange.getRequestURI().getQuery().split("=");
-            int id = Integer.parseInt(query[1].trim());
-            if (!manager.getTasks().containsKey(id)) {
-                writeResponse(exchange, "Задача с id = " + id + "отсутсвует", 204);
             } else {
-                writeResponse(exchange, gson.toJson(manager.getTaskById(id)), 200);
+                String[] query = exchange.getRequestURI().getQuery().split("=");
+                int id = Integer.parseInt(query[1].trim());
+                if (!manager.getTasks().containsKey(id)) {
+                    writeResponse(exchange, "Задача с id = " + id + "отсутсвует", 204);
+                } else {
+                    writeResponse(exchange, gson.toJson(manager.getTaskById(id)), 200);
+                }
             }
+        } catch (RuntimeException | IOException exp) {
+            throw  new JsonIOException(exp.getMessage());
         }
     }
 
-    private void handleGetSubtaskRequest(HttpExchange exchange) throws IOException {
-        if (exchange.getRequestURI().getQuery() == null) {
-            try {
+    private void handleGetSubtaskRequest(HttpExchange exchange) {
+        try {
+            if (exchange.getRequestURI().getQuery() == null) {
                 writeResponse(exchange, gson.toJson(manager.getSubtasks()), 200);
-            } catch (IllegalArgumentException | IOException exp) {
-                System.out.println(exp.getMessage());
-            }
-        } else {
-            String[] query = exchange.getRequestURI().getQuery().split("=");
-            int id = Integer.parseInt(query[1].trim());
-            if (!manager.getSubtasks().containsKey(id)) {
-                writeResponse(exchange, "Задача с id = " + id + "отсутсвует", 204);
             } else {
-                writeResponse(exchange, gson.toJson(manager.getSubtaskById(id)), 200);
+                String[] query = exchange.getRequestURI().getQuery().split("=");
+                int id = Integer.parseInt(query[1].trim());
+                if (!manager.getSubtasks().containsKey(id)) {
+                    writeResponse(exchange, "Задача с id = " + id + "отсутсвует", 204);
+                } else {
+                    writeResponse(exchange, gson.toJson(manager.getSubtaskById(id)), 200);
+                }
             }
+        } catch (RuntimeException | IOException exp) {
+            throw  new JsonIOException(exp.getMessage());
         }
     }
 
-    private void handleGetEpicRequest(HttpExchange exchange) throws IOException {
-        if (exchange.getRequestURI().getQuery() == null) {
-            try {
+    private void handleGetEpicRequest(HttpExchange exchange) {
+        try {
+            if (exchange.getRequestURI().getQuery() == null) {
                 writeResponse(exchange, gson.toJson(manager.getEpics()), 200);
-            } catch (IllegalArgumentException | IOException exp) {
-                System.out.println(exp.getMessage());
-            }
-        } else {
-            String[] query = exchange.getRequestURI().getQuery().split("=");
-            int id = Integer.parseInt(query[1].trim());
-            if (manager.getEpics().containsKey(id)) {
-                writeResponse(exchange, "Задача с id = " + id + "отсутсвует", 204);
             } else {
-                writeResponse(exchange, gson.toJson(manager.getEpicById(id)), 200);
+                String[] query = exchange.getRequestURI().getQuery().split("=");
+                int id = Integer.parseInt(query[1].trim());
+                if (!manager.getEpics().containsKey(id)) {
+                    writeResponse(exchange, "Задача с id = " + id + "отсутсвует", 204);
+                } else {
+                    writeResponse(exchange, gson.toJson(manager.getEpicById(id)), 200);
+                }
             }
+        } catch (RuntimeException | IOException exp) {
+            throw  new JsonIOException(exp.getMessage());
         }
     }
 
-    private void handleGetHistoryRequest(HttpExchange exchange) throws IOException {
+    private void handleGetHistoryRequest(HttpExchange exchange) {
         try {
             writeResponse(exchange, gson.toJson(manager.getHistory()), 200);
-        } catch (IllegalArgumentException exp) {
-            System.out.println(exp.getMessage());
+        } catch (IOException exp) {
+            throw  new JsonIOException(exp.getMessage());
         }
     }
 
@@ -172,53 +154,60 @@ public class Handler implements HttpHandler {
         }
     }
 
+
     private void handlePostTaskRequest(HttpExchange exchange) {
-       try {
-           String body = new String(exchange.getRequestBody().readAllBytes(), DEFAULT_CHARSET);
-           Task task = gson.fromJson(body,Task.class);
-           System.out.println(task.getId());
-           if (!manager.getTasks().containsKey(task.getId())) {
-               manager.addTask(task);
-               writeResponse(exchange,"Задача " + task.getId() + " создана.\n" + body,200);
-           } else {
-               manager.updateTask(task);
-               writeResponse(exchange,"Задача " + task.getId() + " обновлена.\n" + body,200);
-           }
-       }catch (IllegalArgumentException  | IOException exp){
-           System.out.println(exp.getMessage());
-       }
-    }
-    private void handlePostSubtaskRequest(HttpExchange exchange){
         try {
             String body = new String(exchange.getRequestBody().readAllBytes(), DEFAULT_CHARSET);
-            Subtask subtask = gson.fromJson(body,Subtask.class);
-            System.out.println(subtask.getId() + " " +  subtask.getEpicId());
-            if (!manager.getSubtasks().containsKey(subtask.getId())) {
-                manager.addTask(subtask);
-                writeResponse(exchange,"Подзадача " + subtask.getId() + " создана.\n" + body,200);
+
+            Task task = gson.fromJson(body, Task.class);
+            System.out.println(task.getId());
+            if (!manager.getTasks().containsKey(task.getId())) {
+                manager.addTask(task);
+                writeResponse(exchange, "Задача " + task.getId() + " создана.\n" + body, 200);
             } else {
-                manager.updateTask(subtask);
-                writeResponse(exchange,"Подзадача " + subtask.getId() + " обновлена.\n" + body,200);
+                manager.updateTask(task);
+                writeResponse(exchange, "Задача " + task.getId() + " обновлена.\n" + body, 200);
             }
-        }catch (IllegalArgumentException  | IOException exp){
-            System.out.println(exp.getMessage());
+        } catch (RuntimeException | IOException exp) {
+            throw  new JsonIOException(exp.getMessage());
         }
     }
-    private void handlePostEpicRequest(HttpExchange exchange){
+
+    private void handlePostSubtaskRequest(HttpExchange exchange) {
         try {
             String body = new String(exchange.getRequestBody().readAllBytes(), DEFAULT_CHARSET);
-            Epic epic = gson.fromJson(body,Epic.class);
-            System.out.println(body);
-            System.out.println(epic.getId());
-            if (!manager.getSubtasks().containsKey(epic.getId())) {
-                manager.addTask(epic);
-                writeResponse(exchange,"Эпик " + epic.getId() + " создан.\n" + body,200);
+            Subtask subtask = gson.fromJson(body, Subtask.class);
+
+            if (!manager.getSubtasks().containsKey(subtask.getId())) {
+                if (manager.getEpics().containsKey(subtask.getEpicId())) {
+                    manager.addSubtask(subtask);
+                    writeResponse(exchange, "Подзадача " + subtask.getId() + " создана.\n" + body, 200);
+                } else {
+                    writeResponse(exchange, "Подзадача не может быть создана,поскольку нет эпика с id =  " + subtask.getEpicId(), 204);
+                }
             } else {
-                manager.updateTask(epic);
-                writeResponse(exchange,"Эпик " + epic.getId() + " обновлен.\n" + body,200);
+                manager.updateSubtask(subtask);
+                writeResponse(exchange, "Подзадача " + subtask.getId() + " обновлена.\n" + body, 200);
             }
-        }catch (IllegalArgumentException  | IOException exp){
-            System.out.println(exp.getMessage());
+        } catch (RuntimeException | IOException exp) {
+            throw  new JsonIOException(exp.getMessage());
+        }
+    }
+
+    private void handlePostEpicRequest(HttpExchange exchange) {
+        try {
+            String body = new String(exchange.getRequestBody().readAllBytes(), DEFAULT_CHARSET);
+            Epic epic = gson.fromJson(body, Epic.class);
+
+            if (!manager.getSubtasks().containsKey(epic.getId())) {
+                manager.addEpic(epic);
+                writeResponse(exchange, "Эпик " + epic.getId() + " создан.\n" + body, 200);
+            } else {
+                manager.updateEpic(epic);
+                writeResponse(exchange, "Эпик " + epic.getId() + " обновлен.\n" + body, 200);
+            }
+        } catch (RuntimeException | IOException exp) {
+            throw  new JsonIOException(exp.getMessage());
         }
     }
 
@@ -243,7 +232,7 @@ public class Handler implements HttpHandler {
                 manager.clearTasksMap();
                 writeResponse(exchange, "Все задачи успешно удалены", 200);
             } catch (IllegalArgumentException | IOException exp) {
-                System.out.println(exp.getMessage());
+                throw  new JsonIOException(exp.getMessage());
             }
         } else {
             String[] query = exchange.getRequestURI().getQuery().split("=");
@@ -263,7 +252,7 @@ public class Handler implements HttpHandler {
                 manager.clearSubtasksMap();
                 writeResponse(exchange, "Все подзадачи успешно удалены", 200);
             } catch (IllegalArgumentException | IOException exp) {
-                System.out.println(exp.getMessage());
+                throw  new JsonIOException(exp.getMessage());
             }
         } else {
             String[] query = exchange.getRequestURI().getQuery().split("=");
@@ -283,7 +272,7 @@ public class Handler implements HttpHandler {
                 manager.clearEpicsMap();
                 writeResponse(exchange, "Все эпики успешно удалены", 200);
             } catch (IllegalArgumentException | IOException exp) {
-                System.out.println(exp.getMessage());
+                throw  new JsonIOException(exp.getMessage());
             }
         } else {
             String[] query = exchange.getRequestURI().getQuery().split("=");
@@ -320,17 +309,3 @@ enum Methods {
     GET,
     DELETE;
 }
-
-//           JsonElement element = JsonParser.parseString(body);
-//           int id = element.getAsJsonObject().get("id").getAsInt();
-//           System.out.println(id);
-//           String name = element.getAsJsonObject().get("name").getAsString();
-//           System.out.println(name);
-//           String description = element.getAsJsonObject().get("description").getAsString();
-//           System.out.println(description);
-//           String status = element.getAsJsonObject().get("status").getAsString();
-//           Status statusS = Status.valueOf(status);
-//           System.out.println(statusS);
-//           LocalDateTime startTime = LocalDateTime.parse(element.getAsJsonObject().get("startTime").getAsString(),
-//                   format);
-//           System.out.println(startTime);

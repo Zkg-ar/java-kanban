@@ -14,7 +14,7 @@ public class InMemoryHistoryManager implements HistoryManager{
     private Node<Task>head = null;
     private Node<Task>tail = null;
 
-    protected  List<Task> tasksList = new ArrayList<>();
+    protected  List<Task> tasksList;
     @Override
     public List<Task> getHistory() {
         return getTasks();
@@ -70,7 +70,7 @@ public class InMemoryHistoryManager implements HistoryManager{
     }
 
     private List<Task> getTasks() {
-
+        tasksList = new ArrayList<>();
         Node<Task> currentNode = head;
 
         while (currentNode !=null) {

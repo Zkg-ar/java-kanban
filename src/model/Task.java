@@ -39,10 +39,18 @@ public class Task {
 
 
     public Optional<LocalDateTime> getStartTime() {
+        if(startTime == null){
+            setStartTime(LocalDateTime.MAX);
+            return Optional.ofNullable(startTime);
+        }
         return Optional.ofNullable(startTime);
     }
 
     public Duration getDuration() {
+        if(duration==null){
+            setDuration(Duration.ofMinutes(0));
+            return duration;
+        }
         return duration;
     }
 
@@ -61,19 +69,31 @@ public class Task {
         this.id = id;
     }
 
+    protected void setStartTime(LocalDateTime startTime) {
+        this.startTime = startTime;
+    }
+
     @Override
     public String toString() {
         return id +
-                "," + Types.TASK +
+                "," + getType() +
                 "," + name +
                 "," + description +
                 "," + status +
-                "," + getStartTime().get().format(DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy"))+
+                "," + getStartTime().orElse(LocalDateTime.MAX).format(DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy"))+
                 "," + getDuration().toMinutes();
     }
 
     public String getName() {
         return name;
+    }
+
+    public void setDuration(Duration duration) {
+        this.duration = duration;
+    }
+
+    public Types getType(){
+        return Types.TASK;
     }
 
     public LocalDateTime getEndTime() {
@@ -94,6 +114,9 @@ public class Task {
     }
 
     public Status getStatus() {
+        if(status == null){
+            setStatus(Status.NEW);
+        }
         return status;
     }
 

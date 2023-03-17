@@ -11,15 +11,24 @@ public class InMemoryTaskManager implements TaskManager {
     protected Map<Integer, Task> tasks = new HashMap<>();
     protected Map<Integer, Subtask> subtasks = new HashMap<>();
     protected Map<Integer, Epic> epics = new HashMap<>();
+    Set<Integer> idList = new TreeSet<>();
 
     protected Set<Task> prioritizedTasks = new TreeSet<>(Comparator.comparing(task -> task.getStartTime().
-                    orElse(null), Comparator.nullsLast(LocalDateTime::compareTo)));
+            orElse(null), Comparator.nullsLast(LocalDateTime::compareTo)));
 
 
     protected int id = 0;
     protected HistoryManager historyManager = Managers.getDefaultHistory();
 
     public int getId() {
+
+        idList.addAll(tasks.keySet());
+        idList.addAll(subtasks.keySet());
+        idList.addAll(epics.keySet());
+
+        if(idList.contains(id)){
+            id = idList.stream().max(Integer::compare).get()+1;
+        }
         return id;
     }
 
@@ -116,7 +125,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void addTask(Task task) {
         try {
-            tasks.put(id, task);
+            tasks.put(task.getId(), task);
             prioritizedTasks.add(task);
             checkingTheIntersection();
         } catch (Exception e) {
@@ -127,7 +136,7 @@ public class InMemoryTaskManager implements TaskManager {
     @Override
     public void addSubtask(Subtask subtask) {
         try {
-            subtasks.put(id, subtask);
+            subtasks.put(subtask.getId(), subtask);
             prioritizedTasks.add(subtask);
             checkingTheIntersection();
             updateSubtasksMapForEpic(subtask);
@@ -139,7 +148,7 @@ public class InMemoryTaskManager implements TaskManager {
 
     @Override
     public void addEpic(Epic epic) {
-        epics.put(id, epic);
+        epics.put(epic.getId(), epic);
     }
 
     @Override

@@ -18,13 +18,11 @@ public class Subtask extends Task {
         return epicId;
     }
 
-    public Optional<LocalDateTime> getStartTime() {
-        return Optional.ofNullable(startTime);
-    }
+
     @Override
     public String toString() {
         return id +
-                "," + Types.SUBTASK +
+                "," + getType() +
                 "," + name +
                 "," + description +
                 "," + getStatus() +
@@ -41,6 +39,9 @@ public class Subtask extends Task {
         if (!super.equals(o)) return false;
         Subtask subtask = (Subtask) o;
         return epicId == subtask.epicId;
+    }
+    public Types getType(){
+        return Types.SUBTASK;
     }
 
     @Override

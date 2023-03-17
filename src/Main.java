@@ -1,5 +1,8 @@
 import controllers.FileBackedTaskManager;
 
+import controllers.HttpTaskManager;
+import controllers.InMemoryTaskManager;
+import controllers.TaskManager;
 import http.servers.HttpTaskServer;
 import http.servers.KVServer;
 import model.*;
@@ -17,8 +20,11 @@ public class Main {
     public static void main(String[] args) throws IOException {
 
         //TaskManager manager = new InMemoryTaskManager();
-        //new KVServer().start();
-        FileBackedTaskManager manager = new FileBackedTaskManager(new File("src/resources/ManagerFile.csv"));
+        new KVServer().start();
+        HttpTaskManager manager = new HttpTaskManager("http://localhost:8078");
+        HttpTaskServer server = new HttpTaskServer(manager);
+        server.start();
+        //FileBackedTaskManager manager = new FileBackedTaskManager(new File("src/resources/ManagerFile.csv"));
 
         Task task1 = new Task(manager.generateId(), "Задача 1",
                 "Задача 1", Status.NEW,
@@ -72,10 +78,8 @@ public class Main {
         manager.getTaskById(1);
         manager.getTaskById(8);
 
-        manager.loadFromFile(new File("src/resources/ManagerFile.csv"));
+        manager.load();
 
-
-        HttpTaskServer server = new HttpTaskServer(manager);
     }
 
 

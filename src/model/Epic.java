@@ -20,12 +20,13 @@ public class Epic extends Task {
         startTime = LocalDateTime.MAX;
     }
 
-    public Epic(int id,String name, String description,Status status){
-        super(id,name,description,status);
+    public Epic(int id, String name, String description, Status status) {
+        super(id, name, description, status);
         subtasks = new TreeMap<>();
         duration = Duration.ofMinutes(0);
         startTime = LocalDateTime.MAX;
     }
+
     public Epic(int id, String name, String description, LocalDateTime startTime, Duration duration) {
         super(id, name, description);
         this.startTime = startTime;
@@ -39,24 +40,36 @@ public class Epic extends Task {
     }
 
     @Override
+    public Types getType() {
+        return Types.EPIC;
+    }
+
+    @Override
     public String toString() {
         return id +
-                "," + Types.EPIC +
+                "," + getType() +
                 "," + name +
                 "," + description +
                 "," + getStatus() +
                 "," + getStartTime().get().format(DateTimeFormatter.ofPattern("HH:mm dd.MM.yyyy")) +
-                "," + setDuration().toMinutes();
+                "," + getDuration().toMinutes();
     }
-
+    @Override
+    public void setStartTime(LocalDateTime startTime){
+        this.startTime = startTime;
+    }
     public Optional<LocalDateTime> getStartTime() {
+        if(subtasks == null){
+            setStartTime(LocalDateTime.MAX);
+            return Optional.of(startTime);
+        }
 
         if (subtasks.isEmpty()) {
             return Optional.ofNullable(startTime);
         }
         List<Subtask> subtaskList = subtasks.values()
                 .stream()
-                .sorted(Comparator.comparing(task->task.getStartTime().orElse(null),Comparator.nullsLast(LocalDateTime::compareTo)))
+                .sorted(Comparator.comparing(task -> task.getStartTime().orElse(null), Comparator.nullsLast(LocalDateTime::compareTo)))
                 .collect(Collectors.toList());
 
         startTime = subtaskList.get(0).getStartTime().get();
@@ -73,7 +86,12 @@ public class Epic extends Task {
         return endTime;
     }
 
-    public Duration setDuration() {
+    public Duration getDuration() {
+
+        if (subtasks == null) {
+            setDuration(Duration.ofMinutes(0));
+            return duration;
+        }
         if (!subtasks.isEmpty()) {
             duration = Duration.ofMinutes(0);
             for (Integer key : subtasks.keySet()) {
@@ -82,6 +100,10 @@ public class Epic extends Task {
         }
         return duration;
     }
+    @Override
+    public void setDuration(Duration duration){
+        this.duration = duration;
+    }
 
     @Override
     public Status getStatus() {
@@ -89,6 +111,10 @@ public class Epic extends Task {
         int counterNewStatus = 0;
         int counterDoneStatus = 0;
 
+        if (subtasks == null) {
+            setStatus(Status.NEW);
+            return status;
+        }
         if (subtasks.isEmpty()) {
             return Status.NEW;
         }
@@ -110,8 +136,11 @@ public class Epic extends Task {
 
     }
 
-    public Map<Integer, Subtask> getSubtasks() {
 
+    public Map<Integer, Subtask> getSubtasks() {
+        if(subtasks == null){
+            subtasks = new HashMap<>();
+        }
         return subtasks;
     }
 

@@ -1,5 +1,9 @@
 package http.client;
 
+
+import exception.ManagerSaveException;
+
+import java.awt.*;
 import java.io.IOException;
 import java.net.URI;
 import java.net.http.HttpClient;
@@ -7,12 +11,11 @@ import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Formatter;
 
 public class KVTaskClient {
 
     private static final Charset DEFAULT_CHARSET = StandardCharsets.UTF_8;
-    public static final int PORT = 8078;
+
     private final String url;
     private String token;
 
@@ -38,11 +41,16 @@ public class KVTaskClient {
 
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
+            if(response.statusCode()!=200){
+                return "Что-то пошло не так. Сервер вернул код состояния: " + response.statusCode();
+            }
+
             token = response.body();
+
 
         } catch (InterruptedException | IOException e) {
 
-            System.out.println("Регистрация API токена закончилась неудачно. Причина:" + e.getMessage());
+            throw  new ManagerSaveException("Ошибка регистрации API токена" + e.getMessage());
 
         }
 
@@ -50,7 +58,7 @@ public class KVTaskClient {
 
     }
 
-    public void put(String key, String value) {
+    public void put(String key, String value) throws ManagerSaveException{
 
         HttpClient client = HttpClient.newHttpClient();
 
@@ -65,12 +73,14 @@ public class KVTaskClient {
 
         try {
 
-            client.send(request, HttpResponse.BodyHandlers.ofString());
+            HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+            if (response.statusCode()!=200){
+                System.out.println("Что-то пошло не так. Сервер вернул код состояния: " + response.statusCode());
+                return;
+            }
 
         } catch (InterruptedException | IOException e) {
-
-            System.out.println("Сохранение закончилось неудачно. Причина:" + e.getMessage());
-
+            throw  new ManagerSaveException("Сохранение закончилось неудачно. Причина:" + e.getMessage());
         }
 
     }
@@ -78,7 +88,6 @@ public class KVTaskClient {
     public String load(String key) {
 
         HttpClient client = HttpClient.newHttpClient();
-
         URI uri = URI.create(url + "/load/" + key + "?API_TOKEN=" + token);
 
         HttpRequest request = HttpRequest.newBuilder()
@@ -92,13 +101,15 @@ public class KVTaskClient {
 
             response = client.send(request, HttpResponse.BodyHandlers.ofString());
 
+            if (response.statusCode()!=200){
+                return "Что-то пошло не так. Сервер вернул код состояния: " + response.statusCode();
+            }
+
         } catch (InterruptedException | IOException e) {
-
-            System.out.println("Загрузка закончилась неудачно. Причина:" + e.getMessage());
-
+            throw new ManagerSaveException("Загрузка закончилась неудачно. Причина:" + e.getMessage());
         }
 
-        return response != null ? response.body() : "Успешно";
+        return response != null ? response.body() : "null";
 
     }
 

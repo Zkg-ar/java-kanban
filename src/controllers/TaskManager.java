@@ -33,7 +33,7 @@ public interface TaskManager {
 
     void addTask(Task task);
 
-    void addSubtask(Subtask subtask);
+    void  addSubtask(Subtask subtask);
 
     void addEpic(Epic epic);
 
@@ -51,5 +51,5 @@ public interface TaskManager {
 
     List<Task> getHistory();
 
-     Set<Task> getPrioritizedTasks();
+    Set<Task> getPrioritizedTasks();
 }
