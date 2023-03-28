@@ -2,7 +2,10 @@ package http.servers;
 
 import com.sun.net.httpserver.HttpServer;
 import controllers.TaskManager;
-import http.Handler;
+import http.handlers.EpicHandler;
+import http.handlers.SubtaskHandler;
+import http.handlers.TaskHandler;
+
 import java.io.IOException;
 import java.net.InetSocketAddress;
 
@@ -14,7 +17,9 @@ public class HttpTaskServer {
 
     public HttpTaskServer(TaskManager manager) throws IOException {
         server = HttpServer.create(new InetSocketAddress(PORT), 0);
-        server.createContext("/tasks", new Handler(manager));
+        server.createContext("/tasks/task", new TaskHandler(manager));
+        server.createContext("/tasks/subtask", new SubtaskHandler(manager));
+        server.createContext("/tasks/epic", new EpicHandler(manager));
     }
 
     public void start(){
