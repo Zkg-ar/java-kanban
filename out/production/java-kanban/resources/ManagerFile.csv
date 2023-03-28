@@ -1,5 +1,0 @@
-id,type,name,description,status,startDate,duration,epic
-1,TASK,Задача 1,Задача 1,NEW,12:00 01.04.2022,15
-2,EPIC,Эпик1,Описание эпика,DONE,15:00 10.08.2022,13
-3,SUBTASK,Подзадача 1,Описание подзадачи 1,DONE,15:00 10.08.2022,13,2
-
